@@ -15,6 +15,39 @@ SimpleLoader 是一个免费开源、简单的面向对象PHP模块加载器 ，
 
 基于psr规范，充分发挥PHP命名空间特性，解析URL自动加载到指定控制器。符合psr规范的第三方模块，只需use PackageName\ClassName，即可自动加载第三方类路径，直接new使用，再也不用各种require，使您的应用更加规范可读，灵活多变。
 
+## 如何使用
+
+规定`Controller`目录是控制器目录，新建文件`Controller/User.php`，此时就能使用pathinfo模式来访问这个控制器，`http://域名/index.php/user/user/getUserList`
+```php
+<?php
+namespace Controller\User;
+
+class User{
+	public function getUserById(){
+		echo "用户信息id {$_GET['id']} 的信息";
+	}
+	public function getUserList(){
+		echo "用户列表";
+	}
+	public function getUserArticle(){
+		echo "用户id {$_GET['uid']} 的文章列表";
+	}
+}
+```
+
+`index.php`就是程序的入口文件，在入口文件中定义路由规则，路由规则是正则来匹配的，引入SimpleLoader，此时可以使用自定义路由来访问控制器`http://域名/index.php/user/123456/article`
+```php
+<?php
+//路由映射
+$rules=array(
+	'^user$'=>'User/User/getUserList',
+	'^user\/(\d+)$'=>'User/User/getUserById/id/$1',
+	'^user\/(\d+)\/article$'=>'User/User/getUserArticle/uid/$1',
+	'^client\/user$'=>'Client/User/getUserList',
+);
+require_once "SimpleLoader.php";
+SimpleLoader::run($rules);
+```
 
 ## 商业友好的开源协议
 
