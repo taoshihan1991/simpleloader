@@ -35,6 +35,7 @@ class User{
 }
 ```
 
+
 `index.php`就是程序的入口文件，在入口文件中定义路由规则，路由规则是正则来匹配的，引入SimpleLoader，此时可以使用自定义路由来访问控制器`http://域名/index.php/user/123456/article`
 ```php
 <?php
@@ -48,6 +49,11 @@ $rules=array(
 require_once "SimpleLoader.php";
 SimpleLoader::run($rules);
 ```
+
+
+命令行下运行同样支持路由映射，参数以空格隔开，例如如下方式`E:\phpServer\htdocs\simpleloader>php index.php client user`
+
+增加的`.htaccess`文件可以实现访问URL时去掉`index.php`，例如`http://域名/user/123456/article`
 
 ## 商业友好的开源协议
 
