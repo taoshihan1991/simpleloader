@@ -1,6 +1,7 @@
 <?php
 class SimpleLoader{
 	const CONTROL_PACKAGE="\\Controller";
+	const WRITE_LOG=true;
 	public static function run($rules=array()){
 		header("content-type:text/html;charset=utf-8");
 		self::register();
@@ -14,7 +15,6 @@ class SimpleLoader{
 		$dir=str_replace('\\', '/', __DIR__);
 		$class=$dir."/".$class.".php";
 		if(!file_exists($class)){
-			header("HTTP/1.1 404 Not Found");
 		}
 		require_once $class;		
 	}
@@ -85,29 +85,39 @@ class SimpleLoader{
 	public static function shutdownCallback(){
 		$e=error_get_last();
 		if(!$e) return;
-		self::myErrorHandler($e['type'],'<font color="red">Fatal Error</font> '.$e['message'],$e['file'],$e['line']);
+		if(php_sapi_name()=="cli"){
+			$level='Fatal Error ';
+		}else{
+			$level='<font color="red">Fatal Error</font> ';
+		}
+		self::myErrorHandler($e['type'],$level.$e['message'],$e['file'],$e['line']);
 	}
 	//错误处理
-	protected static function myErrorHandler($errno,$errstr,$errfile,$errline){
+	public static function myErrorHandler($errno,$errstr,$errfile,$errline){
 		list($micseconds,$seconds)=explode(" ",microtime());
 		$micseconds=round($micseconds*1000);
 		$micseconds=strlen($micseconds)==1 ? '0'.$micseconds : $micseconds;
 		if(php_sapi_name()=="cli"){
-			$break="\r\n";
+			$mes="[".date("Y-m-d H:i:s",$seconds).":{$micseconds}] ".$errfile." ".$errline." line ".$errstr."\r\n\r\n";
 		}else{
-			$break="<br/>";
+			$mes="<b>[".date("Y-m-d H:i:s",$seconds).":{$micseconds}] ".$errfile." ".$errline." line ".$errstr."</b><br/><br/>";
 		}
-		$mes="[".date("Y-m-d H:i:s",$seconds).":{$micseconds}] ".$errfile." ".$errline." line ".$errstr.$break;
-		echo $mes;		
+		echo $mes;	
+		if(self::WRITE_LOG){
+			$mes="[".date("Y-m-d H:i:s",$seconds).":{$micseconds}] ".$errfile." ".$errline." line ".$errstr."\r\n";
+			$handle=fopen("error.log", "a");
+			fwrite($handle, $mes);
+			fclose($handle);
+		}	
 	}
 	//注册
 	public static function register(){
 		error_reporting(0);
 		set_error_handler(function($errno,$errstr,$errfile,$errline){
-			self::myErrorHandler($errno,$errstr,$errfile,$errline);
+			SimpleLoader::myErrorHandler($errno,$errstr,$errfile,$errline);
 		});
 		register_shutdown_function(function(){
-			self::shutdownCallback();
+			SimpleLoader::shutdownCallback();
 		});
 		spl_autoload_register("self::loadClass");
 	}

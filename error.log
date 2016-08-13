@@ -1,0 +1,2 @@
+[2016-08-13 20:04:43:39] E:\phpServer\htdocs\simpleloader\SimpleLoader.php 19 line require_once(E:/phpServer/htdocs/simpleloader/Controller/Favicon.ico/Index.php) [<a href='function.require-once'>function.require-once</a>]: failed to open stream: No such file or directory
+[2016-08-13 20:04:44:140] E:\phpServer\htdocs\simpleloader\SimpleLoader.php 19 line require_once(E:/phpServer/htdocs/simpleloader/Controller/User/Test.php) [<a href='function.require-once'>function.require-once</a>]: failed to open stream: No such file or directory
