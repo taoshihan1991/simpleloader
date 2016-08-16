@@ -3,11 +3,11 @@ class SimpleLoader{
 	const CONTROL_PACKAGE="\\Controller";
 	const WRITE_LOG=true;
 	public static function run($rules=array()){
-		header("content-type:text/html;charset=utf-8");
 		self::register();
 		self::commandLine();
 		self::router($rules);
-		self::pathInfo();
+		$html=self::pathInfo();
+		self::output($html);
 	}
 	//自动加载
 	public static function loadClass($class){
@@ -29,7 +29,9 @@ class SimpleLoader{
 		}
 	}
 	//路由模式
-	public static function router($rules){
+	public static function router($rules=array()){
+		$ruleFile=\Router::getRules();
+		$rules=array_merge($rules,$ruleFile);
 		if(isset($_SERVER['PATH_INFO']) && !empty($rules)){
 			$pathInfo=ltrim($_SERVER['PATH_INFO'],"/");
 			foreach ($rules as $k=>$v) {
@@ -75,10 +77,19 @@ class SimpleLoader{
 		$controller=new $class;
 		if(method_exists($controller, $_GET['a'])){
 			$controller=new $class;
-			$controller->$_GET['a']();
+			return $controller->$_GET['a']();
 		}else{
 			header("HTTP/1.1 404 Not Found");
 			exit("404");
+		}
+	}
+	//输出
+	public static function output($html=""){
+		header("content-type:text/html;charset=utf-8");
+		if(php_sapi_name()=="cli"){
+			return $html;
+		}else{
+			echo $html;
 		}
 	}
 	//致命错误回调
