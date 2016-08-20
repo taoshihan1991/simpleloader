@@ -85,7 +85,6 @@ class SimpleLoader{
 	}
 	//输出
 	public static function output($html=""){
-		header("content-type:text/html;charset=utf-8");
 		if(php_sapi_name()=="cli"){
 			return $html;
 		}else{

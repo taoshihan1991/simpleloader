@@ -2,8 +2,8 @@
 namespace Log2;
 
 class Log{
-	const SHOW=false;
-	const WRITE=true;
+	const SHOW=true;
+	const WRITE=false;
 	const FILE="error.log";
 	public function __construct(){}
 	public static function i($mes,$tag=""){
