@@ -55,6 +55,9 @@ SimpleLoader::run($rules);
 
 增加的`.htaccess`文件可以实现访问URL时去掉`index.php`，例如`http://域名/user/123456/article`
 
+## 下载网易云歌单歌曲
+命令行下`php index.php music 424038303` 数字为歌单id
+
 ## 商业友好的开源协议
 
 SimpleLoader遵循Apache2开源协议发布。Apache Licence是著名的非盈利开源组织Apache采用的协议。该协议和BSD类似，鼓励代码共享和尊重原作者的著作权，同样允许代码修改，再作为开源或商业软件发布。
