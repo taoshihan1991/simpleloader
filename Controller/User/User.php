@@ -3,12 +3,12 @@ namespace Controller\User;
 
 class User{
 	public function getUserById(){
-		return "用户信息id {$_GET['id']} 的信息";
+		return "userinfo id {$_GET['id']}";
 	}
 	public function getUserList(){
-		return "用户列表";
+		return "userlist";
 	}
 	public function getUserArticle(){
-		return "用户id {$_GET['uid']} 的文章列表";
+		return "user id {$_GET['uid']} article";
 	}
 }

@@ -17,6 +17,9 @@ class Socket{
                     $_SERVER['PATH_INFO']=$matchs[1] ? $matchs[1] : "Index/Index/index";
                     \SimpleLoader::router();
                     $html=\SimpleLoader::pathInfo();
+                    if($matchs[1]==''){
+                        $html="hello world";
+                    }
                 }
                 socket_write($msgsock,$html);
             }else{

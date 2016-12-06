@@ -1,7 +1,23 @@
 <?php
 class SimpleLoader{
 	const CONTROL_PACKAGE="\\Controller";
-	const WRITE_LOG=true;
+	const WRITE_LOG=false;
+	public static function getRules(){
+		//路由映射
+		return array(
+			'^login$'=>'Index/Auth/login',
+			'^domains$'=>'Index/Index/index',
+			'^domain\/mail\/(\d+)$'=>'Index/Index/getuserByDomain/id/$1',
+			'^domain\/add$'=>'Index/Index/addDomain',
+			'^domain\/edit\/(\d+)$'=>'Index/Index/editDomain/id/$1',
+			'^domain\/del\/(\d+)$'=>'Index/Index/delDomain/id/$1',
+			'^user\/add\/(\d+)$'=>'Index/Index/addUser/domainId/$1',
+			'^user\/del\/(\d+)$'=>'Index/Index/delUser/id/$1',
+			'^user\/edit\/(\d+)$'=>'Index/Index/editUser/id/$1',
+			'^group\/(\d+)$'=>'Index/Index/getGroupByDomain/id/$1',
+			'^group\/edit\/([\w\W]+)$'=>'Index/Index/editGroup/source/$1',
+		);		
+	}
 	public static function run($rules=array()){
 		self::register();
 		self::commandLine();
@@ -30,8 +46,11 @@ class SimpleLoader{
 	}
 	//路由模式
 	public static function router($rules=array()){
-		$ruleFile=\Router::getRules();
+		$ruleFile=self::getRules();
 		$rules=array_merge($rules,$ruleFile);
+		if(isset($_GET['s'])&&!isset($_SERVER['PATH_INFO'])){
+			$_SERVER['PATH_INFO']=$_GET['s'];
+		}
 		if(isset($_SERVER['PATH_INFO']) && !empty($rules)){
 			$pathInfo=ltrim($_SERVER['PATH_INFO'],"/");
 			foreach ($rules as $k=>$v) {
@@ -45,6 +64,7 @@ class SimpleLoader{
 	}
 	//pathinfo处理
 	public static function pathInfo(){
+
 		if(isset($_SERVER['PATH_INFO'])){
 			$pathinfo=array_filter(explode("/", $_SERVER['PATH_INFO']));
 			for($i=1;$i<=count($pathinfo);$i++){

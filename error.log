@@ -2628,3 +2628,4 @@
 [2016-08-20 14:24:08:816] E:\phpServer\htdocs\simpleloader\Controller\Index\Netease.php 45 line Cannot modify header information - headers already sent by (output started at E:\phpServer\htdocs\simpleloader\SimpleLoader.php:115)
 [2016-08-20 14:24:08:817] E:\phpServer\htdocs\simpleloader\Controller\Index\Netease.php 46 line Cannot modify header information - headers already sent by (output started at E:\phpServer\htdocs\simpleloader\SimpleLoader.php:115)
 [2016-08-20 14:24:08:818] E:\phpServer\htdocs\simpleloader\Controller\Index\Netease.php 47 line Cannot modify header information - headers already sent by (output started at E:\phpServer\htdocs\simpleloader\SimpleLoader.php:115)
+[2016-08-26 16:11:02:892] D:\phpServer\WWW\test\simpleloader\Server\Socket.php 24 line Undefined variable: html
