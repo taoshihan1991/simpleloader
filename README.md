@@ -55,8 +55,7 @@ SimpleLoader::run($rules);
 
 增加的`.htaccess`文件可以实现访问URL时去掉`index.php`，例如`http://域名/user/123456/article`
 
-## 下载网易云歌单歌曲
-命令行下`php index.php music 424038303` 数字为歌单id
+
 
 ## 商业友好的开源协议
 

@@ -3,7 +3,7 @@ class SimpleLoader{
 	const CONTROL_PACKAGE="\\Controller";
 	const WRITE_LOG=false;
 	public static function getRules(){
-		//路由映射
+		//只是个例子
 		return array(
 			'^login$'=>'Index/Auth/login',
 			'^domains$'=>'Index/Index/index',
