@@ -55,6 +55,7 @@ app::getInstance()->setRouter($router)->run();
 
 增加的`.htaccess`文件可以实现访问URL时去掉`index.php`，例如`http://域名/user/123456/article`
 nginx下的最简单配置如下:
+```php
 server {
         listen 80; 
         server_name  域名;
@@ -72,7 +73,7 @@ server {
         }   
 
 }
-
+```
 
 ## 商业友好的开源协议
 
