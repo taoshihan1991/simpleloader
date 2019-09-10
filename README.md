@@ -17,12 +17,12 @@ SimpleLoader 是一个免费开源、简单的面向对象PHP模块加载器 ，
 
 ## 如何使用
 
-规定`Controller`目录是控制器目录，新建文件`Controller/User.php`，此时就能使用pathinfo模式来访问这个控制器，`http://域名/index.php/user/user/getUserList`
+规定`Controller`目录是控制器目录，新建文件`controller/user.php`，此时就能使用pathinfo模式来访问这个控制器，`http://域名/index.php/user/user/getUserList`
 ```php
 <?php
-namespace Controller\User;
+namespace controller\user;
 
-class User{
+class user{
 	public function getUserById(){
 		echo "用户信息id {$_GET['id']} 的信息";
 	}
@@ -40,21 +40,38 @@ class User{
 ```php
 <?php
 //路由映射
+require_once "loader.php";
 $rules=array(
-	'^user$'=>'User/User/getUserList',
-	'^user\/(\d+)$'=>'User/User/getUserById/id/$1',
-	'^user\/(\d+)\/article$'=>'User/User/getUserArticle/uid/$1',
-	'^client\/user$'=>'Client/User/getUserList',
+	'^user$'=>'user/user/getUserList',
+	'^user\/(\d+)$'=>'user/user/getUserById/id/$1',
+	'^user\/(\d+)\/article$'=>'user/user/getUserArticle/uid/$1',
+	'^client\/user$'=>'client/user/getUserList',
 );
-require_once "SimpleLoader.php";
-SimpleLoader::run($rules);
+app::getInstance()->setRouter($router)->run();
 ```
 
 
 命令行下运行同样支持路由映射，参数以空格隔开，例如如下方式`E:\phpServer\htdocs\simpleloader>php index.php client user`
 
 增加的`.htaccess`文件可以实现访问URL时去掉`index.php`，例如`http://域名/user/123456/article`
+nginx下的最简单配置如下:
+server {
+        listen 80; 
+        server_name  域名;
+        access_log  /var/log/nginx/域名.access.log  main;
+        root   /home/xinghua;
+        index  index.html index.htm index.php;
+        location / { 
+                try_files $uri $uri/ /index.php?q=$uri&$args;
+        }   
+        location ~ \.php {
+                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_index  index.php;
+                fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+                include        fastcgi_params;
+        }   
 
+}
 
 
 ## 商业友好的开源协议
