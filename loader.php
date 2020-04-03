@@ -2,6 +2,7 @@
 class app{
         private static $instance = null;
         private $actionMethod=null;
+	private $swoole=null;
         private $router=array();
         private $control="\\controller";
         private $bindings=array();
@@ -16,10 +17,36 @@ class app{
 	public function run($rules=array()){
                 $this->setActionMethod();
 		$this->registerAutoload();
-		$this->commandLine();
-		$this->router($rules);
-		$html=$this->pathInfo();
-		self::output($html);
+		if(!is_null($this->swoole)){
+			$this->swoole->start();
+		}else{
+			$this->commandLine();
+			$this->router($rules);
+			$html=$this->pathInfo();
+			echo $html;
+		}
+	}
+	public static function callbackSwoole($req,$res){
+    		if ($req->server['path_info'] == '/favicon.ico' || $req->server['request_uri'] == '/favicon.ico') {
+        		$res->end();
+        		return;
+    		}
+		$app=self::getInstance();
+		$uri=str_replace("/index.php","",$req->server['request_uri']);
+                if(strpos($uri,"?")!==false){
+                    $uri=substr($uri,0,strpos($uri,'?'));
+                }
+                $uri=trim($uri,'/');
+		$app->setActionMethod($uri);
+		$app->router();
+		$html=$app->pathInfo();
+		$res->end($html);
+		
+	}
+	public function setSwoole($swoole){
+		$this->swoole=$swoole;
+		$this->swoole->on('request',__CLASS__ . "::callbackSwoole");
+		return $this;
 	}
         private function setActionMethod($newUri=null){
             if($newUri==null && php_sapi_name()!="cli"){
@@ -110,6 +137,10 @@ class app{
 		$_GET['c']=!empty($_GET['c']) ? strtolower($_GET['c']) : 'index';
 		$_GET['a']=!empty($_GET['a']) ? $_GET['a'] : 'index';
 		$class=$this->control."\\{$_GET['m']}\\{$_GET['c']}";
+		if(!class_exists($class)){
+			header("HTTP/1.1 404 Not Found");
+			return "{$class} class not exists";
+		}
 		$controller=new $class;
 		if(method_exists($controller, $_GET['a'])){
 			$controller=new $class;
@@ -117,7 +148,7 @@ class app{
 			return $controller->$method();
 		}else{
 			header("HTTP/1.1 404 Not Found");
-			exit("{$_GET['a']} method not exists");
+			return "{$_GET['a']} method not exists";
 		}
 	}
 	//输出

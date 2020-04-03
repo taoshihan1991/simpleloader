@@ -2,7 +2,8 @@
 namespace controller\notice;
 class service{
         public function reviewService(){
-            echo "hello";
-            return include './view/service.php';
+            $tpl= require_once('./view/service.php');
+		var_dump($tpl);
+		return $tpl;
         }
 }
