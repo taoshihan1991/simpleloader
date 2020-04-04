@@ -3,6 +3,8 @@ class app{
         private static $instance = null;
         private $actionMethod=null;
 	private $swoole=null;
+	private $request=null;
+	private $response=null;
         private $router=array();
         private $control="\\controller";
         private $bindings=array();
@@ -38,10 +40,24 @@ class app{
                 }
                 $uri=trim($uri,'/');
 		$app->setActionMethod($uri);
+		$app->setRequest($req);
 		$app->router();
 		$html=$app->pathInfo();
+		$app->setResponse($res);
 		$res->end($html);
 		
+	}
+	public function getResponse(){
+		return $this->response;
+	}
+	public function getRequest(){
+		return $this->request;
+	}
+	public function setResponse($res){
+		$this->response=$res;
+	}
+	public function setRequest($req){
+		$this->request=$req;
 	}
 	public function setSwoole($swoole){
 		$this->swoole=$swoole;
@@ -58,6 +74,7 @@ class app{
                 $this->actionMethod=$uri;
             }else{
                 $this->actionMethod=$newUri;
+		$_SERVER['REQUEST_URI']=$newUri;
             }
         }
 	//自动加载
@@ -100,8 +117,9 @@ class app{
                     foreach ($rules as $k=>$v) {
                             $reg="/{$k}/i";
                             if(preg_match($reg,$this->actionMethod)){
-                                    $res=preg_replace($reg,$v,$this->actionMethod);
-                                    $this->setActionMethod($res);
+                                    //$res=preg_replace($reg,$v,$this->actionMethod);
+				$uri=substr($v,0,strpos($v,'?'));
+                                $this->setActionMethod($uri);
                             }
                     }
             }
@@ -123,13 +141,6 @@ class app{
 					case 2:
 						$_GET['a']=$key;
 						break;
-					default:
-						if($i>2){
-							if($i%2==1){
-								$_GET[$key]=$value;
-							}
-						}
-						break;
 				}
 			}
 		}
@@ -138,7 +149,7 @@ class app{
 		$_GET['a']=!empty($_GET['a']) ? $_GET['a'] : 'index';
 		$class=$this->control."\\{$_GET['m']}\\{$_GET['c']}";
 		if(!class_exists($class)){
-			header("HTTP/1.1 404 Not Found");
+			if (!isset($this->swolle)) header("HTTP/1.1 404 Not Found");
 			return "{$class} class not exists";
 		}
 		$controller=new $class;
@@ -147,16 +158,8 @@ class app{
                         $method=$_GET['a'];
 			return $controller->$method();
 		}else{
-			header("HTTP/1.1 404 Not Found");
+			if (!isset($this->swoole)) header("HTTP/1.1 404 Not Found");
 			return "{$_GET['a']} method not exists";
-		}
-	}
-	//输出
-	public static function output($html=""){
-		if(php_sapi_name()=="cli"){
-			return $html;
-		}else{
-			echo $html;
 		}
 	}
 	//注册
@@ -169,6 +172,9 @@ class app{
         }
         //创建对象
         public function make($id,$parameters=array()){
+		if(!isset($this->bindings[$id])){
+			$this->bindings[$id."::class"]="getIntance";
+		}
             if(!isset($this->resource[$id])){
                 $this->resource[$id]=call_user_func_array($this->bindings[$id],$parameters);
             }

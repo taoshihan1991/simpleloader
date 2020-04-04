@@ -1,7 +1,7 @@
 <?php
 require_once "loader.php";
 $router=array(
-    '^notice\/review$'=>'notice/service/reviewService',
+    '^about\.'=>'single/index/about?id=1',
     '^pig'=>'cmd/pig/getPigPrice'
 );
 $app=app::getInstance();
