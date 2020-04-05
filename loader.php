@@ -17,6 +17,7 @@ class app{
             return self::$instance;
         }
 	public function run($rules=array()){
+		$this->setConstant();
                 $this->setActionMethod();
 		$this->registerAutoload();
 		if(!is_null($this->swoole)){
@@ -27,6 +28,9 @@ class app{
 			$html=$this->pathInfo();
 			echo $html;
 		}
+	}
+	public function setConstant(){
+		if(!defined("ROOT")) define("ROOT",dirname(__FILE__));
 	}
 	public static function callbackSwoole($req,$res){
     		if ($req->server['path_info'] == '/favicon.ico' || $req->server['request_uri'] == '/favicon.ico') {
@@ -39,6 +43,7 @@ class app{
                     $uri=substr($uri,0,strpos($uri,'?'));
                 }
                 $uri=trim($uri,'/');
+		if (empty($uri)) $uri='/';
 		$app->setActionMethod($uri);
 		$app->setRequest($req);
 		$app->router();
@@ -143,23 +148,26 @@ class app{
 						break;
 				}
 			}
+		}else{
+			unset($_GET);
 		}
+		var_dump($_GET);
 		$_GET['m']=!empty($_GET['m']) ? strtolower($_GET['m']) : 'index';
 		$_GET['c']=!empty($_GET['c']) ? strtolower($_GET['c']) : 'index';
 		$_GET['a']=!empty($_GET['a']) ? $_GET['a'] : 'index';
-		$class=$this->control."\\{$_GET['m']}\\{$_GET['c']}";
+                $method=$_GET['a'];
+		$class=$this->control."\\{$_GET['m']}\\{$_GET['c']}";unset($_GET);
 		if(!class_exists($class)){
 			if (!isset($this->swolle)) header("HTTP/1.1 404 Not Found");
 			return "{$class} class not exists";
 		}
 		$controller=new $class;
-		if(method_exists($controller, $_GET['a'])){
+		if(method_exists($controller, $method)){
 			$controller=new $class;
-                        $method=$_GET['a'];
 			return $controller->$method();
 		}else{
 			if (!isset($this->swoole)) header("HTTP/1.1 404 Not Found");
-			return "{$_GET['a']} method not exists";
+			return "{$method} method not exists";
 		}
 	}
 	//注册

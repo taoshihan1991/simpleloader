@@ -4,6 +4,9 @@ namespace controller\index;
 
 class index{
     public function index(){
-        return 222;
+        return include ROOT."/view/index.php";
     }
+    public function getList(){
+	$list=array();
+	}
 }
