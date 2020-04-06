@@ -2,7 +2,8 @@
 require_once "loader.php";
 $router=array(
     '^about\.'=>'single/index/about?id=1',
-    '^pig'=>'cmd/pig/getPigPrice',
+    '^sysinfo$'=>'index/index/memInfo',
+    '^uptime$'=>'index/index/uptime',
     '^\d+\.'=>'index/index/index'
 );
 $app=app::getInstance();

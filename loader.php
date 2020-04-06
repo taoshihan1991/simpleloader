@@ -47,29 +47,24 @@ class app{
 		$app->setActionMethod($uri);
 		$app->setRequest($req);
 		$app->router();
-		$html=$app->pathInfo();
-		$app->setResponse($res);
-		$res->end($html);
+    		if(!isset($req->header['sec-websocket-version'])){
+			$html=$app->pathInfo();
+			$app->setResponse($res);
+			$res->end($html);
+		}
 		
 	}
-	public static function callbackSwooleOnMessage($req,$res){
-    		if ($req->server['path_info'] == '/favicon.ico' || $req->server['request_uri'] == '/favicon.ico') {
-        		$res->end();
-        		return;
-    		}
+	public static function callbackSwooleOnMessage($server,$frame){
 		$app=self::getInstance();
-		$uri=str_replace("/index.php","",$req->server['request_uri']);
-                if(strpos($uri,"?")!==false){
-                    $uri=substr($uri,0,strpos($uri,'?'));
-                }
-                $uri=trim($uri,'/');
-		if (empty($uri)) $uri='/';
-		$app->setActionMethod($uri);
-		$app->setRequest($req);
-		$app->router();
-		$html=$app->pathInfo();
-		$app->setResponse($res);
-		$res->end($html);
+				
+    		foreach ($server->connections as $fd) {
+			$app->setActionMethod($app->get("swoole_websocket_uri_".$fd));
+			$app->router();
+			//var_dump($app->actionMethod);
+        		if ($server->isEstablished($fd)) {
+            			$server->push($fd, $app->pathInfo());
+        		}
+    		}
 		
 	}
 
@@ -87,8 +82,16 @@ class app{
 	}
 	public function setSwoole($swoole){
 		$this->swoole=$swoole;
+		$this->swoole->on('open',function($server,$req){
+			$app=self::getInstance();
+			$app->bind("swoole_websocket_uri_".$req->fd,$req->server['request_uri']);
+			
+		});
+		$this->swoole->on('message',__CLASS__ . "::callbackSwooleOnMessage");
 		$this->swoole->on('request',__CLASS__ . "::callbackSwoole");
-		$this->swoole->on('Message',__CLASS__ . "::callbackSwooleOnMessage");
+		$this->swoole->on('close',function($server,$fd){
+		});
+
 		return $this;
 	}
         private function setActionMethod($newUri=null){
@@ -100,7 +103,13 @@ class app{
                 $uri=trim($uri,'/');
                 $this->actionMethod=$uri;
             }else{
-                $this->actionMethod=$newUri;
+		$newUri=str_replace("/index.php","",$newUri);
+                if(strpos($newUri,"?")!==false){
+                    $newUri=substr($newUri,0,strpos($newUri,'?'));
+                }
+                $uri=trim($newUri,'/');
+
+                $this->actionMethod=$uri;
 		$_SERVER['REQUEST_URI']=$newUri;
             }
         }
@@ -145,8 +154,11 @@ class app{
                             $reg="/{$k}/i";
                             if(preg_match($reg,$this->actionMethod)){
                                     //$res=preg_replace($reg,$v,$this->actionMethod);
-				$uri=substr($v,0,strpos($v,'?'));
-                                $this->setActionMethod($uri);
+				if(strpos($v,"?")!==false){
+                    			$v=substr($v,0,strpos($uri,'?'));
+                		}
+				//var_dump($v);
+                                $this->setActionMethod($v);
                             }
                     }
             }
@@ -209,4 +221,7 @@ class app{
             }
             return $this->resource[$id];
         }
+	public function get($id){
+		return $this->bindings[$id];
+	}
 }

@@ -14,4 +14,14 @@ class index{
 		exec("/usr/bin/free -h",$output);
 		return $output;
 	}
+	public function meminfo(){
+		$data=$this->getSysinfo();
+		//var_dump($data);
+		return json_encode($data);
+	}	
+	public function uptime(){
+		exec("/usr/bin/uptime",$output);
+		return json_encode($output);
+	}
+
 }
