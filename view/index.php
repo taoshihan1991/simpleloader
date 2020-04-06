@@ -126,6 +126,9 @@ return <<<EOF
       <a href="#">返回顶部</a>
     </p>
     <p>基于NGINX+PHP高性能框架SWOOLE HTTP SERVER运行</p>
+    <p>内存:{$sysinfo[0]}</p>
+    <p>{$sysinfo[1]}</p>
+    <p>{$sysinfo[2]}</p>
     <p>最简路由框架 <a href="https://github.com/taoshihan1991/simpleloader" target="_blank">SimpleLoader</a>，power by <a href="https://www.cnblogs.com/taoshihan" target="_blank">陶士涵的菜地</a></p>
   </div>
 </footer>

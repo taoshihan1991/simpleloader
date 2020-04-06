@@ -52,6 +52,27 @@ class app{
 		$res->end($html);
 		
 	}
+	public static function callbackSwooleOnMessage($req,$res){
+    		if ($req->server['path_info'] == '/favicon.ico' || $req->server['request_uri'] == '/favicon.ico') {
+        		$res->end();
+        		return;
+    		}
+		$app=self::getInstance();
+		$uri=str_replace("/index.php","",$req->server['request_uri']);
+                if(strpos($uri,"?")!==false){
+                    $uri=substr($uri,0,strpos($uri,'?'));
+                }
+                $uri=trim($uri,'/');
+		if (empty($uri)) $uri='/';
+		$app->setActionMethod($uri);
+		$app->setRequest($req);
+		$app->router();
+		$html=$app->pathInfo();
+		$app->setResponse($res);
+		$res->end($html);
+		
+	}
+
 	public function getResponse(){
 		return $this->response;
 	}
@@ -67,6 +88,7 @@ class app{
 	public function setSwoole($swoole){
 		$this->swoole=$swoole;
 		$this->swoole->on('request',__CLASS__ . "::callbackSwoole");
+		$this->swoole->on('Message',__CLASS__ . "::callbackSwooleOnMessage");
 		return $this;
 	}
         private function setActionMethod($newUri=null){
@@ -151,7 +173,6 @@ class app{
 		}else{
 			unset($_GET);
 		}
-		var_dump($_GET);
 		$_GET['m']=!empty($_GET['m']) ? strtolower($_GET['m']) : 'index';
 		$_GET['c']=!empty($_GET['c']) ? strtolower($_GET['c']) : 'index';
 		$_GET['a']=!empty($_GET['a']) ? $_GET['a'] : 'index';

@@ -17,7 +17,7 @@ if(php_sapi_name()!="cli"){
 	$app->setRouter($router)
 	->run();
 }else{
-	$swoole=new Swoole\Http\Server("0.0.0.0", 9505);
+	$swoole=new Swoole\Websocket\Server("0.0.0.0", 9505);
 	$swoole->set([
     		'daemonize' => 1,
 	]);
