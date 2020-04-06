@@ -2,6 +2,11 @@
 
 SimpleLoader 是一个免费开源、简单的面向对象PHP模块加载器 ，目标是提供最轻便的路由加载处理功能，只有一个文件包含全部功能代码，没有框架的复杂，非常适合追求极简风格的开发者使用。
 
+## 高性能框架探索
+
+swoole作为使用c语言开发的PHP扩展，提供了使用PHP来进行底层网络编程的支持，SimpleLoader积极探索swoole的各种高性能新特性，并把它增加到路由中来，并且同时兼容传统FPM的开发形式。
+
+
 ## 全面的路由处理特性支持
 
 最新的SimpleLoader为应用模块化和API接口开发提供了强有力的支持，这些支持包括：
@@ -10,6 +15,7 @@ SimpleLoader 是一个免费开源、简单的面向对象PHP模块加载器 ，
 *  PathInfo模式加载控制器
 *  普通传参形式模块加载
 *  命令行传参支持
+*  WebSocket路由映射
 
 ## 模块化的开发理念
 
@@ -24,13 +30,13 @@ namespace controller\user;
 
 class user{
 	public function getUserById(){
-		echo "用户信息id {$_GET['id']} 的信息";
+		return "用户信息id {$_GET['id']} 的信息";
 	}
 	public function getUserList(){
-		echo "用户列表";
+		return "用户列表";
 	}
 	public function getUserArticle(){
-		echo "用户id {$_GET['uid']} 的文章列表";
+		return "用户id {$_GET['uid']} 的文章列表";
 	}
 }
 ```
@@ -54,13 +60,13 @@ app::getInstance()->setRouter($router)->run();
 命令行下运行同样支持路由映射，参数以空格隔开，例如如下方式`E:\phpServer\htdocs\simpleloader>php index.php client user`
 
 增加的`.htaccess`文件可以实现访问URL时去掉`index.php`，例如`http://域名/user/123456/article`
-nginx下的最简单配置如下:
+nginx+fpm下的最简单配置如下:
 ```php
 server {
         listen 80; 
         server_name  域名;
         access_log  /var/log/nginx/域名.access.log  main;
-        root   /home/xinghua;
+        root   /代码目录;
         index  index.html index.htm index.php;
         location / { 
                 try_files $uri $uri/ /index.php?q=$uri&$args;
@@ -74,6 +80,25 @@ server {
 
 }
 ```
+
+nginx+swoole下的最简单配置如下:
+```php
+server {
+        listen 80; 
+        server_name  域名;
+        access_log  /var/log/nginx/域名.access.log  main;
+        root   /代码目录/public;
+        index  index.html index.htm index.php;
+        location / { 
+                proxy_http_version 1.1;
+                proxy_set_header Connection "keep-alive";
+                proxy_set_header X-Real-IP $remote_addr;
+                if (!-e $request_filename) {
+                        proxy_pass http://127.0.0.1:9505;
+                }
+        }   
+
+}``
 
 ## 商业友好的开源协议
 
