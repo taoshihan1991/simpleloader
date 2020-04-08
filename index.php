@@ -2,7 +2,7 @@
 require_once "loader.php";
 $router=array(
     '^about\.'=>'single/index/about?id=1',
-    '^laruence$'=>'index/index/memInfo',
+    '^laruence$'=>'index/index/laruence',
     '^sysinfo$'=>'index/index/memInfo',
     '^uptime$'=>'index/index/uptime',
     '^\d+\.'=>'index/index/index'
@@ -21,7 +21,7 @@ if(php_sapi_name()!="cli"){
 }else{
 	$swoole=new Swoole\Websocket\Server("0.0.0.0", 9505);
 	$swoole->set([
-    		'daemonize' => 1,
+    		'daemonize' => 0,
 	]);
 	$app->setRouter($router)
 	->setSwoole($swoole)

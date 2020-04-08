@@ -23,5 +23,11 @@ class index{
 		exec("/usr/bin/uptime",$output);
 		return json_encode($output);
 	}
-
+    public function laruence(){
+	$q="PHP7";
+	$es=new \lib\es();
+	$list=$es->search($q);	
+        return include ROOT."/view/laruence.php";
+    }
+ 
 }

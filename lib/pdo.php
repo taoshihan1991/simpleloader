@@ -39,10 +39,9 @@ class pdo {
 		}
 
 		$stmt = $this->prep_query($query);	
-		$r=false;
 		try{
 			$r=$stmt->execute($values);
-			return $r;
+			return $stmt;
 
 		}catch(\PDOException $e){
 			throw $e;
