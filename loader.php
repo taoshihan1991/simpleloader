@@ -9,7 +9,14 @@ class app{
         private $control="\\controller";
         private $bindings=array();
         private $resource=array();
-        private function __construct(){}
+        private function __construct(){
+		$this->setConstant();
+		$composerLoader=ROOT."/vendor/autoload.php";
+		if(file_exists($composerLoader)){
+			require_once $composerLoader;
+		}
+
+	}
         public static function getInstance(){
             if (!self::$instance) {
                 self::$instance = new self();
@@ -17,7 +24,6 @@ class app{
             return self::$instance;
         }
 	public function run($rules=array()){
-		$this->setConstant();
                 $this->setActionMethod();
 		$this->registerAutoload();
 		if(!is_null($this->swoole)){
@@ -119,10 +125,7 @@ class app{
             $dir=str_replace('\\', '/', __DIR__);
             $class=$dir."/".$class.".php";
             if(!file_exists($class)){
-                $class='lib'.$class;
-                if(!class_exists($class)){
-                    return false;
-                }
+		return false;
             }
             require_once $class;		
 	}
