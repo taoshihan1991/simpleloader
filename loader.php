@@ -100,6 +100,8 @@ class app{
 
 		return $this;
 	}
+	
+	
         private function setActionMethod($newUri=null){
             if($newUri==null && php_sapi_name()!="cli"){
                 $uri=str_replace("/index.php","",$_SERVER['REQUEST_URI']);
@@ -225,6 +227,9 @@ class app{
             return $this->resource[$id];
         }
 	public function get($id){
-		return $this->bindings[$id];
+		if(isset($this->bindings[$id])){
+			return $this->bindings[$id];
+		}
+		return null;
 	}
 }
