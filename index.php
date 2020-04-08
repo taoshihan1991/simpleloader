@@ -2,6 +2,7 @@
 require_once "loader.php";
 $router=array(
     '^about\.'=>'single/index/about?id=1',
+    '^laruence$'=>'index/index/memInfo',
     '^sysinfo$'=>'index/index/memInfo',
     '^uptime$'=>'index/index/uptime',
     '^\d+\.'=>'index/index/index'
