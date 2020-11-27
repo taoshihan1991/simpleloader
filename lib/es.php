@@ -19,15 +19,19 @@ class es{
 		}
 
 	}
-	public function search(){
+	public function search($q=''){
 		$client = new \GuzzleHttp\Client();
 		$condition=array();
-		$condition['json']['query']['multi_match']['query']="PHP7";
-		$condition['json']['query']['multi_match']['type']="most_fields";
-		$condition['json']['query']['multi_match']['fields']=['content','title','link'];
-		$condition['json']['highlight']['fields']['content']=new \stdclass();
-		$condition['json']['highlight']['fields']['title']=new \stdclass();
-		$res = $client->request('POST', 'http://127.0.0.1:9200/sinamail/laruence/_search',$condition);
+		$data=array();
+		if(!empty($q)){
+			$condition['query']['multi_match']['query']=$q;
+			$condition['query']['multi_match']['type']="most_fields";
+			$condition['query']['multi_match']['fields']=['content','title','link'];
+			$condition['highlight']['fields']['content']=new \stdclass();
+			$condition['highlight']['fields']['title']=new \stdclass();
+			$data['json']=$condition;
+		}
+		$res = $client->request('POST', 'http://127.0.0.1:9200/sinamail/laruence/_search',$data);
 
 		$json=$res->getBody();
 		$arr=json_decode($json,true);
@@ -36,8 +40,8 @@ class es{
 	public function deleteEs(){
 		$client = new \GuzzleHttp\Client();
 		$condition=array();
-		$condition['json']['query']['match_all']=new \Stdclass();
-		$res = $client->request('POST', 'http://127.0.0.1:9200/sinamail/laruence/_delete_by_query',$condition);
+		$condition['query']['match_all']=new \Stdclass();
+		$res = $client->request('POST', 'http://127.0.0.1:9200/sinamail/laruence/_delete_by_query',array('json'=>$condition));
 
 		$json=$res->getBody();
 		$arr=json_decode($json,true);
@@ -55,7 +59,18 @@ class es{
 		$arr=json_decode($json,true);
 		print_r($arr);
 	}
+	public function hot(){
+		$client = new \GuzzleHttp\Client();
+		$condition=array();
+		$condition['size']=0;
+		$condition['aggs']['top']['terms']['field']='title';
+		$res = $client->request('POST', 'http://127.0.0.1:9200/sinamail/laruence/_search',array('json'=>$condition));
 
+		$json=$res->getBody();
+		$arr=json_decode($json,true);
+		print_r($arr);
+
+	}
 
 
 }

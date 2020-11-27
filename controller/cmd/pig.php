@@ -9,7 +9,6 @@ class pig{
 	public function getArticle(){
 		$app=\app::getInstance();
 		$pdo=$app->make("pdo");
-		var_dump($pdo);
 
 		foreach($this->getList() as $k=>$list){
 			foreach($list as $row){
@@ -41,7 +40,7 @@ class pig{
 	public function addEs(){
 		$app=\app::getInstance();
 		$pdo=$app->make("pdo");
-		
+
 		$all=$pdo->fetchAll("select * from laruence");
 		$client = new \GuzzleHttp\Client();
 
@@ -54,28 +53,20 @@ class pig{
 			$json=$res->getBody()->getContents();
 			var_dump($a["title"]);
 		}
-		
+
 	}
 	public function search(){
-		$client = new \GuzzleHttp\Client();
-		$condition=array();
-		$condition['json']['query']['multi_match']['query']="PHP7";
-		$condition['json']['query']['multi_match']['type']="most_fields";
-		$condition['json']['query']['multi_match']['fields']=['content','title','link'];
-		$condition['json']['highlight']['fields']['content']=new \stdclass();
-		$condition['json']['highlight']['fields']['title']=new \stdclass();
-		$res = $client->request('POST', 'http://127.0.0.1:9200/sinamail/laruence/_search',$condition);
-	
-		$json=$res->getBody();
-		$arr=json_decode($json,true);
-		print_r($arr);
+		$q=$_SERVER['argv'];
+		$es=new \lib\es();
+		$list=$es->search($q[4]);
+		print_r($list['hits']['hits']['highlight']);
 	}
 	public function deleteEs(){
 		$client = new \GuzzleHttp\Client();
 		$condition=array();
-		$condition['json']['query']['match_all']=new \Stdclass();
-		$res = $client->request('POST', 'http://127.0.0.1:9200/sinamail/laruence/_delete_by_query',$condition);
-	
+		//$condition['json']['query']['match_all']=new \Stdclass();
+		$res = $client->request('DELETE', 'http://127.0.0.1:9200/sinamail/laruence',$condition);
+
 		$json=$res->getBody();
 		$arr=json_decode($json,true);
 		print_r($arr);
@@ -87,11 +78,33 @@ class pig{
 		$condition['json']['laruence']['properties']['link']=array("type"=>'string');
 		$condition['json']['laruence']['properties']['content']=array("type"=>'string');
 		$res = $client->request('PUT', 'http://127.0.0.1:9200/sinamail/laruence/_mapping',$condition);
-	
+
 		$json=$res->getBody();
 		$arr=json_decode($json,true);
 		print_r($arr);
 	}
-
-
+	public function testGuzz(){
+		$client = new \GuzzleHttp\Client();
+		// 发送一个异步请求
+		$request = new \GuzzleHttp\Psr7\Request('GET', 'http://www.sopans.com');
+		$request2 = new \GuzzleHttp\Psr7\Request('GET', 'http://www.sopans.com/laruence');
+		$request3 = new \GuzzleHttp\Psr7\Request('GET', 'http://www.sopans.com/about');
+		$promise = $client->sendAsync($request)->then(function ($response) {
+				echo 111;
+				});
+		$promise = $client->sendAsync($request2)->then(function ($response)use($client,$request3) {
+				$client->sendAsync($request3)->then(function ($res){
+						echo 444;
+						});
+				echo 222;
+				});
+		echo 333;
+		$promise->wait();
+	}
+	public function testHot(){
+		$es=new \lib\es();
+		$es->hot();
+	}
+	public function addMo(){
+	}
 }

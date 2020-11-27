@@ -3,12 +3,14 @@ namespace controller\index;
 
 
 class index{
-    public function index(){
+	public function __contruct(){
+	}
+	public function index(){
 		$sysinfo=$this->getSysinfo();
-        return include ROOT."/view/index.php";
-    }
-    public function getList(){
-	$list=array();
+		return include ROOT."/view/index.php";
+	}
+	public function getList(){
+		$list=array();
 	}
 	public function getSysinfo(){
 		exec("/usr/bin/free -h",$output);
@@ -23,11 +25,17 @@ class index{
 		exec("/usr/bin/uptime",$output);
 		return json_encode($output);
 	}
-    public function laruence(){
-	$q="PHP7";
-	$es=new \lib\es();
-	$list=$es->search($q);	
-        return include ROOT."/view/laruence.php";
-    }
- 
+	public function laruence(){
+		$sysinfo=$this->getSysinfo();
+		$req=\app::getInstance()->getRequest();
+		$q=isset($req->get['q'])? $req->get['q'] : "";
+		if(empty($q)) $q="鸟哥";
+
+		if(isset($req->get['all'])) $q='';
+		var_dump($q);
+		$es=new \lib\es();
+		$list=$es->search($q);	
+		return include ROOT."/view/laruence.php";
+	}
+
 }

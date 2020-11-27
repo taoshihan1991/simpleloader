@@ -1,11 +1,11 @@
 <?php
 return <<<EOF
-<footer class="text-muted">
+<footer class="bg-dark text-white-50 pt-3 overflow-hidden">
   <div class="container">
     <p class="float-right">
       <a href="#">返回顶部</a>
     </p>
-    <p>基于NGINX+PHP高性能框架SWOOLE HTTP SERVER+SEBSOCKET运行</p>
+    <p>基于NGINX+PHP高性能框架SWOOLE HTTP SERVER+WEBSOCKET运行</p>
 	<div id="memInfo">
     <p>内存:{$sysinfo[0]}</p>
     <p>{$sysinfo[1]}</p>
@@ -31,9 +31,9 @@ return <<<EOF
             if ("WebSocket" in window){
                var ws = new WebSocket("ws://115.159.28.111:9505/sysinfo");
                ws.onopen = function(){
-			setInterval(function(){
+			//setInterval(function(){
 				ws.send("heart beat");
-			},6000);
+			//},60000);
                };
                 
                ws.onmessage = function (e) { 
@@ -64,6 +64,7 @@ return <<<EOF
 
             }
       </script>
+</body>
 </html>
 
 EOF;

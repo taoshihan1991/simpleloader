@@ -133,7 +133,7 @@ class app{
 	}
 	//命令行模式
 	private function commandLine(){
-		if(php_sapi_name()=="cli"){
+		if(php_sapi_name()=="cli" && is_null($this->swoole)){
 			$uri="";
 			foreach ($_SERVER['argv'] as $k=>$v) {
                                 if($k==0){
