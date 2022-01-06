@@ -5,13 +5,12 @@ return <<<EOF
     <p class="float-right">
       <a href="#">返回顶部</a>
     </p>
-    <p>基于NGINX+PHP高性能框架SWOOLE HTTP SERVER+WEBSOCKET运行</p>
-	<div id="memInfo">
-    <p>内存:{$sysinfo[0]}</p>
-    <p>{$sysinfo[1]}</p>
+
 	</div>
 	<p id="uptime"></p>
-    <p>最简路由框架 <a href="https://github.com/taoshihan1991/simpleloader" target="_blank">SimpleLoader</a>，power by <a href="https://www.cnblogs.com/taoshihan" target="_blank">陶士涵的菜地</a></p>
+    <p>最简路由框架 <a href="https://github.com/taoshihan1991/simpleloader" target="_blank">SimpleLoader</a>，power by <a href="https://www.cnblogs.com/taoshihan" target="_blank">陶士涵的菜地</a>
+    ICP备案 <a href="http://www.miitbeian.gov.cn" target="_blank">京ICP备17033956号</a>
+    </p>
   </div>
 </footer>
 
