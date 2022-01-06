@@ -13,8 +13,7 @@ class index{
 		$list=array();
 	}
 	public function getSysinfo(){
-		exec("/usr/bin/free -h",$output);
-		return $output;
+	    return "";
 	}
 	public function meminfo(){
 		$data=$this->getSysinfo();
@@ -22,8 +21,7 @@ class index{
 		return json_encode($data);
 	}	
 	public function uptime(){
-		exec("/usr/bin/uptime",$output);
-		return json_encode($output);
+		return "";
 	}
 	public function laruence(){
 		$sysinfo=$this->getSysinfo();
